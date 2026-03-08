@@ -2,7 +2,8 @@
 name = "serde_json-fuzz"
 version = "0.0.0"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
-edition = "2021"
+edition = "2024"
+rust-version = "1.94"
 publish = false
 
 [package.metadata]

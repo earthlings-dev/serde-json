@@ -12,7 +12,7 @@ use core::hash::{Hash, Hasher};
 use serde::de::{self, Unexpected, Visitor};
 #[cfg(feature = "arbitrary_precision")]
 use serde::de::{IntoDeserializer, MapAccess};
-use serde::{forward_to_deserialize_any, Deserialize, Deserializer, Serialize, Serializer};
+use serde::{Deserialize, Deserializer, Serialize, Serializer, forward_to_deserialize_any};
 
 #[cfg(feature = "arbitrary_precision")]
 pub(crate) const TOKEN: &str = "$serde_json::private::Number";

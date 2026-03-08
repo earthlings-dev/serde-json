@@ -1,6 +1,6 @@
 use crate::error::{Error, ErrorCode, Result};
 use crate::map::Map;
-use crate::value::{to_value, Value};
+use crate::value::{Value, to_value};
 use alloc::borrow::ToOwned;
 use alloc::string::{String, ToString};
 use alloc::vec::Vec;

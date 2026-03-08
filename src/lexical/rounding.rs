@@ -24,11 +24,7 @@ pub(crate) fn lower_n_mask(n: u64) -> u64 {
     let bits: u64 = mem::size_of::<u64>() as u64 * 8;
     debug_assert!(n <= bits, "lower_n_mask() overflow in shl.");
 
-    if n == bits {
-        u64::MAX
-    } else {
-        (1 << n) - 1
-    }
+    if n == bits { u64::MAX } else { (1 << n) - 1 }
 }
 
 /// Calculate the halfway point for the lower `n` bits.
@@ -37,11 +33,7 @@ pub(crate) fn lower_n_halfway(n: u64) -> u64 {
     let bits: u64 = mem::size_of::<u64>() as u64 * 8;
     debug_assert!(n <= bits, "lower_n_halfway() overflow in shl.");
 
-    if n == 0 {
-        0
-    } else {
-        nth_bit(n - 1)
-    }
+    if n == 0 { 0 } else { nth_bit(n - 1) }
 }
 
 /// Calculate a bitwise mask with `n` 1 bits starting at the `bit` position.

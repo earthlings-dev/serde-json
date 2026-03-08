@@ -107,7 +107,7 @@ pub use crate::number::Number;
 
 #[cfg(feature = "raw_value")]
 #[cfg_attr(docsrs, doc(cfg(feature = "raw_value")))]
-pub use crate::raw::{to_raw_value, RawValue};
+pub use crate::raw::{RawValue, to_raw_value};
 
 /// Represents any valid JSON value.
 ///
@@ -241,7 +241,7 @@ impl Display for Value {
         fn io_error(_: fmt::Error) -> io::Error {
             // Error value does not matter because Display impl just maps it
             // back to fmt::Error.
-            io::Error::new(io::ErrorKind::Other, "fmt error")
+            io::Error::other("fmt error")
         }
 
         let alternate = f.alternate();

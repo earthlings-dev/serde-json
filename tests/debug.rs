@@ -1,7 +1,7 @@
 #![allow(clippy::uninlined_format_args)]
 
 use indoc::indoc;
-use serde_json::{json, Number, Value};
+use serde_json::{Number, Value, json};
 
 #[test]
 fn number() {

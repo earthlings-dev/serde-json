@@ -393,17 +393,17 @@ pub mod __private {
 #[doc(inline)]
 pub use crate::de::from_reader;
 #[doc(inline)]
-pub use crate::de::{from_slice, from_str, Deserializer, StreamDeserializer};
+pub use crate::de::{Deserializer, StreamDeserializer, from_slice, from_str};
 #[doc(inline)]
 pub use crate::error::{Error, Result};
-#[doc(inline)]
-pub use crate::ser::{to_string, to_string_pretty, to_vec, to_vec_pretty};
 #[cfg(feature = "std")]
 #[cfg_attr(docsrs, doc(cfg(feature = "std")))]
 #[doc(inline)]
-pub use crate::ser::{to_writer, to_writer_pretty, Serializer};
+pub use crate::ser::{Serializer, to_writer, to_writer_pretty};
 #[doc(inline)]
-pub use crate::value::{from_value, to_value, Map, Number, Value};
+pub use crate::ser::{to_string, to_string_pretty, to_vec, to_vec_pretty};
+#[doc(inline)]
+pub use crate::value::{Map, Number, Value, from_value, to_value};
 
 // We only use our own error type; no need for From conversions provided by the
 // standard library's try! macro. This reduces lines of LLVM IR by 4%.

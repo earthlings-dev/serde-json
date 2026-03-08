@@ -10,7 +10,7 @@ use super::large_powers;
 use super::num::*;
 use super::small_powers::*;
 use alloc::vec::Vec;
-use core::{cmp, iter, mem};
+use core::{cmp, mem};
 
 // ALIASES
 // -------
@@ -502,7 +502,7 @@ mod small {
         debug_assert!(n != 0);
         if !x.is_empty() {
             x.reserve(n);
-            x.splice(..0, iter::repeat(0).take(n));
+            x.splice(..0, std::iter::repeat_n(0, n));
         }
     }
 

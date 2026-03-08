@@ -30,8 +30,8 @@ use serde_bytes::{ByteBuf, Bytes};
 #[cfg(feature = "raw_value")]
 use serde_json::value::RawValue;
 use serde_json::{
-    from_reader, from_slice, from_str, from_value, json, to_string, to_string_pretty, to_value,
-    to_vec, Deserializer, Number, Value,
+    Deserializer, Number, Value, from_reader, from_slice, from_str, from_value, json, to_string,
+    to_string_pretty, to_value, to_vec,
 };
 use std::collections::BTreeMap;
 #[cfg(feature = "raw_value")]
@@ -41,7 +41,6 @@ use std::hash::BuildHasher;
 #[cfg(feature = "raw_value")]
 use std::hash::{Hash, Hasher};
 use std::io;
-use std::iter;
 use std::marker::PhantomData;
 use std::mem;
 use std::str::FromStr;
@@ -1309,33 +1308,61 @@ fn test_parse_option() {
 
 #[test]
 fn test_parse_enum_errors() {
-    test_parse_err::<Animal>(
-        &[
-            ("{}", "expected value at line 1 column 2"),
-            ("[]", "expected value at line 1 column 1"),
-            ("\"unknown\"",
-             "unknown variant `unknown`, expected one of `Dog`, `Frog`, `Cat`, `AntHive` at line 1 column 9"),
-            ("{\"unknown\":null}",
-             "unknown variant `unknown`, expected one of `Dog`, `Frog`, `Cat`, `AntHive` at line 1 column 10"),
-            ("{\"Dog\":", "EOF while parsing a value at line 1 column 7"),
-            ("{\"Dog\":}", "expected value at line 1 column 8"),
-            ("{\"Dog\":{}}", "invalid type: map, expected unit at line 1 column 7"),
-            ("\"Frog\"", "invalid type: unit variant, expected tuple variant"),
-            ("\"Frog\" 0 ", "invalid type: unit variant, expected tuple variant"),
-            ("{\"Frog\":{}}",
-             "invalid type: map, expected tuple variant Animal::Frog at line 1 column 8"),
-            ("{\"Cat\":[]}", "invalid length 0, expected struct variant Animal::Cat with 2 elements at line 1 column 9"),
-            ("{\"Cat\":[0]}", "invalid length 1, expected struct variant Animal::Cat with 2 elements at line 1 column 10"),
-            ("{\"Cat\":[0, \"\", 2]}", "trailing characters at line 1 column 16"),
-            ("{\"Cat\":{\"age\": 5, \"name\": \"Kate\", \"foo\":\"bar\"}",
-             "unknown field `foo`, expected `age` or `name` at line 1 column 39"),
-
-            // JSON does not allow trailing commas in data structures
-            ("{\"Cat\":[0, \"Kate\",]}", "trailing comma at line 1 column 19"),
-            ("{\"Cat\":{\"age\": 2, \"name\": \"Kate\",}}",
-             "trailing comma at line 1 column 34"),
-        ],
-    );
+    test_parse_err::<Animal>(&[
+        ("{}", "expected value at line 1 column 2"),
+        ("[]", "expected value at line 1 column 1"),
+        (
+            "\"unknown\"",
+            "unknown variant `unknown`, expected one of `Dog`, `Frog`, `Cat`, `AntHive` at line 1 column 9",
+        ),
+        (
+            "{\"unknown\":null}",
+            "unknown variant `unknown`, expected one of `Dog`, `Frog`, `Cat`, `AntHive` at line 1 column 10",
+        ),
+        ("{\"Dog\":", "EOF while parsing a value at line 1 column 7"),
+        ("{\"Dog\":}", "expected value at line 1 column 8"),
+        (
+            "{\"Dog\":{}}",
+            "invalid type: map, expected unit at line 1 column 7",
+        ),
+        (
+            "\"Frog\"",
+            "invalid type: unit variant, expected tuple variant",
+        ),
+        (
+            "\"Frog\" 0 ",
+            "invalid type: unit variant, expected tuple variant",
+        ),
+        (
+            "{\"Frog\":{}}",
+            "invalid type: map, expected tuple variant Animal::Frog at line 1 column 8",
+        ),
+        (
+            "{\"Cat\":[]}",
+            "invalid length 0, expected struct variant Animal::Cat with 2 elements at line 1 column 9",
+        ),
+        (
+            "{\"Cat\":[0]}",
+            "invalid length 1, expected struct variant Animal::Cat with 2 elements at line 1 column 10",
+        ),
+        (
+            "{\"Cat\":[0, \"\", 2]}",
+            "trailing characters at line 1 column 16",
+        ),
+        (
+            "{\"Cat\":{\"age\": 5, \"name\": \"Kate\", \"foo\":\"bar\"}",
+            "unknown field `foo`, expected `age` or `name` at line 1 column 39",
+        ),
+        // JSON does not allow trailing commas in data structures
+        (
+            "{\"Cat\":[0, \"Kate\",]}",
+            "trailing comma at line 1 column 19",
+        ),
+        (
+            "{\"Cat\":{\"age\": 2, \"name\": \"Kate\",}}",
+            "trailing comma at line 1 column 34",
+        ),
+    ]);
 }
 
 #[test]
@@ -1903,9 +1930,8 @@ fn test_json_pointer_mut() {
 
 #[test]
 fn test_stack_overflow() {
-    let brackets: String = iter::repeat('[')
-        .take(127)
-        .chain(iter::repeat(']').take(127))
+    let brackets: String = std::iter::repeat_n('[', 127)
+        .chain(std::iter::repeat_n(']', 127))
         .collect();
     let _: Value = from_str(&brackets).unwrap();
 
@@ -2221,21 +2247,31 @@ fn test_category() {
     assert!(from_str::<Vec<usize>>("[0").unwrap_err().is_eof());
     assert!(from_str::<Vec<usize>>("[0,").unwrap_err().is_eof());
 
-    assert!(from_str::<BTreeMap<String, usize>>("{")
-        .unwrap_err()
-        .is_eof());
-    assert!(from_str::<BTreeMap<String, usize>>("{\"k\"")
-        .unwrap_err()
-        .is_eof());
-    assert!(from_str::<BTreeMap<String, usize>>("{\"k\":")
-        .unwrap_err()
-        .is_eof());
-    assert!(from_str::<BTreeMap<String, usize>>("{\"k\":0")
-        .unwrap_err()
-        .is_eof());
-    assert!(from_str::<BTreeMap<String, usize>>("{\"k\":0,")
-        .unwrap_err()
-        .is_eof());
+    assert!(
+        from_str::<BTreeMap<String, usize>>("{")
+            .unwrap_err()
+            .is_eof()
+    );
+    assert!(
+        from_str::<BTreeMap<String, usize>>("{\"k\"")
+            .unwrap_err()
+            .is_eof()
+    );
+    assert!(
+        from_str::<BTreeMap<String, usize>>("{\"k\":")
+            .unwrap_err()
+            .is_eof()
+    );
+    assert!(
+        from_str::<BTreeMap<String, usize>>("{\"k\":0")
+            .unwrap_err()
+            .is_eof()
+    );
+    assert!(
+        from_str::<BTreeMap<String, usize>>("{\"k\":0,")
+            .unwrap_err()
+            .is_eof()
+    );
 
     let fail = FailReader(io::ErrorKind::NotConnected);
     assert!(from_reader::<_, String>(fail).unwrap_err().is_io());

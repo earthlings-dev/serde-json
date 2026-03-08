@@ -21,7 +21,7 @@ use core::ops;
 use serde::de;
 
 #[cfg(not(feature = "preserve_order"))]
-use alloc::collections::{btree_map, BTreeMap};
+use alloc::collections::{BTreeMap, btree_map};
 #[cfg(feature = "preserve_order")]
 use indexmap::IndexMap;
 
